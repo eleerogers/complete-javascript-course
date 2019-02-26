@@ -1,6 +1,30 @@
 // Global app controller
+import Search from './models/Search';
+import * as searchView from './views/searchView';
+import { elements, renderLoader, clearLoader } from './views/base';
 
-import x from './test';
-const y = 44
+// Global state of the app
+const state = {};
 
-console.log(`I imported ${x} from another module and then I added this! The const is ${y}`);
+async function controlSearch() {
+  const query = searchView.getInput();
+  if (query) {
+    state.search = new Search(query);
+    searchView.clearInput();
+    searchView.clearResults();
+    renderLoader(elements.SearchRes);
+    await state.search.getResults();
+    clearLoader();
+    searchView.renderResults(state.search.result.recipes);
+  }
+}
+
+document.querySelector('.search').addEventListener('submit', e => {
+  e.preventDefault();
+  controlSearch(e.target);
+});
+
+const search = new Search('pizza');
+
+
+
